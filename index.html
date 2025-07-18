@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Deadline Animation</title>
+  <style>
+    body {
+      margin: 0;
+      background: #1c1c1c;
+    }
+
+    svg {
+      display: block;
+      margin: 0 auto;
+      height: 100vh;
+    }
+
+    .circle {
+      fill: none;
+      stroke: #ffca28;
+      stroke-width: 15;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 440;
+      animation: anim 5s linear forwards;
+    }
+
+    @keyframes anim {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    text {
+      fill: #ffffff;
+      font-size: 24px;
+      font-family: Arial, sans-serif;
+      text-anchor: middle;
+    }
+  </style>
+</head>
+<body>
+  <svg width="400" height="400">
+    <circle class="circle" cx="200" cy="200" r="70" />
+    <text x="200" y="210">Deadline</text>
+  </svg>
+</body>
+</html>
