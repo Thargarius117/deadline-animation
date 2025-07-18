@@ -1,73 +1,56 @@
 // Init
 var $ = jQuery;
-var animationTime = 20,
-    days = 7;
- 
-$(document).ready(function(){
-console.log("jQuery version:", $.fn.jquery);
-    // timer arguments: 
-    //   #1 - time of animation in mileseconds, 
-    //   #2 - days to deadline
 
-    $('#progress-time-fill, #death-group').css({'animation-duration': animationTime+'s'});
+$(document).ready(function () {
+  console.log("jQuery version:", $.fn.jquery);
 
-    var deadlineAnimation = function () {
-        setTimeout(function(){
-            $('#designer-arm-grop').css({'animation-duration': '1.5s'});
-        },0);
+  // 🔧 Configuration : date de début et date de deadline
+  const startDate = new Date("2025-07-10T22:00:00").getTime();
+  const deadlineDate = new Date("2025-07-18T23:00:00").getTime();
 
-        setTimeout(function(){
-            $('#designer-arm-grop').css({'animation-duration': '1s'});
-        },4000);
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const diff = deadlineDate - now;
 
-        setTimeout(function(){
-            $('#designer-arm-grop').css({'animation-duration': '0.7s'});
-        },8000);
-
-        setTimeout(function(){
-            $('#designer-arm-grop').css({'animation-duration': '0.3s'});
-        },12000);
-
-        setTimeout(function(){
-            $('#designer-arm-grop').css({'animation-duration': '0.2s'});
-        },15000);
-    };
-
-    function timer(totalTime, deadline) {
-        var time = totalTime * 1000;
-        var dayDuration = time / deadline;
-        var actualDay = deadline;
-
-        var timer = setInterval(countTime, dayDuration);
-
-        function countTime() {
-            --actualDay;
-            $('.deadline-days .day').text(actualDay);
-
-            if (actualDay == 0) {
-                clearInterval(timer);
-                $('.deadline-days .day').text(deadline);
-            }
-        }
+    if (diff <= 0) {
+      $('.deadline-days .day').text(0);
+      clearInterval(timerInterval);
+      return;
     }
 
-    var deadlineText = function () {
-        var $el = $('.deadline-days');
-        var html = '<div class="mask-red"><div class="inner">' + $el.html() + '</div></div><div class="mask-white"><div class="inner">' + $el.html() + '</div></div>';
-        $el.html(html);
-    }
+    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    $('.deadline-days .day').text(daysLeft);
+  }
 
-    deadlineText();
+  function setAnimationProgress() {
+    const now = new Date().getTime();
+    const totalDuration = deadlineDate - startDate;
+    const elapsed = now - startDate;
 
-    deadlineAnimation();
-    timer(animationTime, days);
+    const progress = Math.max(0, Math.min(1, elapsed / totalDuration));
+    const fullWidth = 586; // largeur du rect SVG
+    const currentX = -fullWidth + (progress * fullWidth);
 
-    setInterval(function(){
-        timer(animationTime, days);
-        deadlineAnimation();
+    $('#progress-time-fill').attr('x', currentX);
 
-        console.log('begin interval', animationTime * 1000);
+    // Ajuste la durée de l’animation restante
+    const remainingTime = deadlineDate - now;
+    const totalSeconds = Math.max(1, remainingTime / 1000);
+    $('#progress-time-fill, #death-group').css({ 'animation-duration': totalSeconds + 's' });
+  }
 
-    }, animationTime * 1000);
+  function deadlineText() {
+    var $el = $('.deadline-days');
+    var html = '<div class="mask-red"><div class="inner">' + $el.html() + '</div></div><div class="mask-white"><div class="inner">' + $el.html() + '</div></div>';
+    $el.html(html);
+  }
 
+  deadlineText();
+  updateCountdown();
+  setAnimationProgress();
+
+  const timerInterval = setInterval(function () {
+    updateCountdown();
+    setAnimationProgress();
+  }, 60000); // actualise chaque minute
 });
