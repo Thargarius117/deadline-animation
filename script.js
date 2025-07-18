@@ -4,8 +4,8 @@ var $ = jQuery;
 $(document).ready(function () {
   console.log("jQuery version:", $.fn.jquery);
 
-  // 🔧 Configuration : date de début et date de deadline
-  const startDate = new Date("2025-07-10T22:00:00").getTime();
+  // Dates de départ et de fin
+  const startDate = new Date("2025-07-18T00:00:00").getTime();
   const deadlineDate = new Date("2025-07-18T23:00:00").getTime();
 
   function updateCountdown() {
@@ -22,35 +22,41 @@ $(document).ready(function () {
     $('.deadline-days .day').text(daysLeft);
   }
 
-  function setAnimationProgress() {
+  function setAnimationState() {
     const now = new Date().getTime();
-    const totalDuration = deadlineDate - startDate;
+    const total = deadlineDate - startDate;
     const elapsed = now - startDate;
 
-    const progress = Math.max(0, Math.min(1, elapsed / totalDuration));
-    const fullWidth = 586; // largeur du rect SVG
+    const progress = Math.max(0, Math.min(1, elapsed / total));
+    const fullWidth = 586; // largeur totale de la barre
     const currentX = -fullWidth + (progress * fullWidth);
 
+    // Position immédiate actuelle
     $('#progress-time-fill').attr('x', currentX);
 
-    // Ajuste la durée de l’animation restante
+    // Durée restante
     const remainingTime = deadlineDate - now;
     const totalSeconds = Math.max(1, remainingTime / 1000);
-    $('#progress-time-fill, #death-group').css({ 'animation-duration': totalSeconds + 's' });
+
+    // Re-animer uniquement la portion restante
+    $('#progress-time-fill, #death-group').css({
+      'animation-duration': totalSeconds + 's',
+      'animation-delay': '0s'
+    });
   }
 
   function deadlineText() {
-    var $el = $('.deadline-days');
-    var html = '<div class="mask-red"><div class="inner">' + $el.html() + '</div></div><div class="mask-white"><div class="inner">' + $el.html() + '</div></div>';
+    const $el = $('.deadline-days');
+    const html = '<div class="mask-red"><div class="inner">' + $el.html() + '</div></div><div class="mask-white"><div class="inner">' + $el.html() + '</div></div>';
     $el.html(html);
   }
 
   deadlineText();
   updateCountdown();
-  setAnimationProgress();
+  setAnimationState();
 
-  const timerInterval = setInterval(function () {
+  const timerInterval = setInterval(() => {
     updateCountdown();
-    setAnimationProgress();
-  }, 60000); // actualise chaque minute
+    setAnimationState();
+  }, 60000); // met à jour chaque minute
 });
