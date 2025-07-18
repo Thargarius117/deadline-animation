@@ -4,7 +4,7 @@ var animationTime = 20,
     days = 7;
  
 $(document).ready(function(){
-
+console.log("jQuery version:", $.fn.jquery);
     // timer arguments: 
     //   #1 - time of animation in mileseconds, 
     //   #2 - days to deadline
